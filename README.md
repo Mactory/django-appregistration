@@ -11,14 +11,14 @@ This app provides a base class to easily realize django apps that allow other ap
 
 ##Installation
 
-    * From the pip repository: ```pip install django-appregistration```
-    * or directly from github: ```pip install git+git://github.com/NB-Dev/django-apregistration.git``
+* From the pip repository: `pip install django-appregistration`
+* or directly from github: `pip install git+git://github.com/NB-Dev/django-apregistration.git`
 
 ##Usage
 
 django-appregistration provides two base classes for the registration of modules from other apps:
 `MultiListPartRegistry` and `SingleListPartRegistry`. While both have the same basic functionality, in the
-`MultiListPartRegistry` multiple distinct lists of objects can be collected, while the `SingleListPartRegistry` only
+`MultiListPartRegistry` multiple distinct lists of objects can be collected, the `SingleListPartRegistry` only
 contains a single list.
 
 To implement a `...PartRegistry` in your app, create a subclass of the `...PartRegistry` or your choice in a convenient
@@ -43,27 +43,69 @@ To register elements with the Registry you therefore need to implement the appro
 `call_function_subpath` in an app that is listed in the `INSTALLED_APPS`. The implemented function then needs to call
 the `add_item` function on the passed registry.
 
-### MultiListPartRegistry
+### MultiListPartRegistry(object)
 The following functions are available:
 
 #### add_part(list, part)
 Adds the part given by the `part` parameter to the list with the name given by the `list` parameter.
 
-### get(list)
+#### get(list)
 Returns the parts in the list with the name given by the `list` parameter. The elements are sorted before they are
 returned.
 
-### sort_parts(parts)
+#### sort_parts(parts)
 Can be overwritten to define a custom ordering of the parts. The default function simply returns the list unordered.
 
-### load()
+#### load()
 When called, the class is initialized and loads the available parts into its list cache. Does nothing if the `load()`
 was already called. Is called automatically by the `get()` function. There is no need to call it explicitly unless you
 want to initialize the class before the first list is retrieved.
 
-### reset()
+#### reset()
 Resets the Registry to its initial state so that the parts will be reloaded the next time the `load()` function is
 called. Usually there is no need to call this as it only adds extra overhead when the parts need to be loaded again.
+
+### SingleListPartRegistry(MultiListPartRegistry)
+The following functions are additionally available:
+
+#### add_part(part)
+Adds the part given by the `part` parameter to the list.
+
+#### get()
+Returns the parts in the list. The elements are sorted before they are returned.
+
+## Example
+Here is an implementation example with a Registry implemented in the `extendable_app` app and an app `extending_app` 
+that extends the Registry
+
+#### File: extendable_app.registry.py
+    from django_appregistration import MultiListPartRegistry
+    
+    class MyRegisterable(object):
+       pass
+    
+    class MyRegistry(MultiListPartRegistry):
+       part_class = MyRegisterable
+       call_function_subpath = 'registerable.register'
+
+#### File: extending_app.registerable.py
+    def register(registry):
+       # import inside the function so that the import is only needed if the registry is used
+       # and the package is therefore available
+       from extendable_app.registry import MyRegisterable
+       
+       registry.add_part('default', MyRegisterable())
+       registry.add_part('other', MyRegisterable())
+
+Like this the `extending_app` registers two parts when the registry is loaded, one in the list `default` and one
+in the list `other`.
+
+The objects can be retrieved like so:
+
+    from extendable_app.registry import MyRegistry
+    default_parts = MyRegistry.get('default') # retrieves the `default` list
+    other_parts = MyRegistry.get('other') # retrieves the `other` list
+   
 
 ##Running the tests
 
