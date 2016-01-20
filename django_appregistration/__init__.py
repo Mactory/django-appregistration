@@ -3,6 +3,7 @@ from pydoc import locate
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.encoding import force_text
 
 __author__ = 'Tim Schneider <tim.schneider@northbridge-development.de>'
 __copyright__ = "Copyright 2016, Northbridge Development Konrad & Schneider GbR"
@@ -39,7 +40,7 @@ class MultiTypePartRegistry(object):
                 cls.types[type] = []
             cls.types[type].append(part)
         else:
-            raise ValueError('Part %s is not of type %s' % (unicode(part), unicode(cls.part_class)))
+            raise ValueError('Part %s is not of type %s' % (force_text(part), force_text(cls.part_class)))
 
     @classmethod
     def load(cls):
