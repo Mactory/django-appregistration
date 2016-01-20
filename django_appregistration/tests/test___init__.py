@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from django.test import TestCase
 from mock import patch, MagicMock
-from django_appregistration import MultiTypePartRegistry, SingleTypePartRegistry
+from django_appregistration import MultiListPartRegistry, SingleListPartRegistry
 
 try:
     from django.test import override_settings
@@ -24,48 +24,48 @@ logger = logging.getLogger(__name__)
 
 class MultiTypePartRegistryTestCase(TestCase):
     def tearDown(self):
-        MultiTypePartRegistry.reset()
-        MultiTypePartRegistry.part_class = None
-        MultiTypePartRegistry.ignore_django_namespace = True
-        MultiTypePartRegistry.call_function_subpath = None
+        MultiListPartRegistry.reset()
+        MultiListPartRegistry.part_class = None
+        MultiListPartRegistry.ignore_django_namespace = True
+        MultiListPartRegistry.call_function_subpath = None
 
     def test_reset(self):
-        MultiTypePartRegistry.loaded = True
-        MultiTypePartRegistry.types = {'type': []}
+        MultiListPartRegistry.loaded = True
+        MultiListPartRegistry.lists = {'type': []}
 
-        MultiTypePartRegistry.reset()
+        MultiListPartRegistry.reset()
 
-        self.assertFalse(MultiTypePartRegistry.loaded)
-        self.assertDictEqual(MultiTypePartRegistry.types, {})
+        self.assertFalse(MultiListPartRegistry.loaded)
+        self.assertDictEqual(MultiListPartRegistry.lists, {})
 
     @patch('django_appregistration.settings.INSTALLED_APPS', ['django.test.app', 'app1', 'app2.django.test'])
     def test__checked_apps(self):
-        MultiTypePartRegistry.ignore_django_namespace = False
+        MultiListPartRegistry.ignore_django_namespace = False
         self.assertListEqual(
-            MultiTypePartRegistry._checked_apps(),
+            MultiListPartRegistry._checked_apps(),
             ['django.test.app', 'app1', 'app2.django.test'],
         )
 
-        MultiTypePartRegistry.ignore_django_namespace = True
+        MultiListPartRegistry.ignore_django_namespace = True
         self.assertListEqual(
-            MultiTypePartRegistry._checked_apps(),
+            MultiListPartRegistry._checked_apps(),
             ['app1', 'app2.django.test'],
         )
 
-    def test_add_item(self):
+    def test_add_part(self):
         class Test(object):
             pass
-        MultiTypePartRegistry.part_class = Test
+        MultiListPartRegistry.part_class = Test
 
-        self.assertRaises(ValueError, MultiTypePartRegistry.add_item, '', object())
+        self.assertRaises(ValueError, MultiListPartRegistry.add_part, '', object())
 
         test = Test()
-        MultiTypePartRegistry.add_item('Test', test)
-        MultiTypePartRegistry.add_item('Test', test)
-        MultiTypePartRegistry.add_item('Test2', test)
+        MultiListPartRegistry.add_part('Test', test)
+        MultiListPartRegistry.add_part('Test', test)
+        MultiListPartRegistry.add_part('Test2', test)
 
         self.assertDictEqual(
-            MultiTypePartRegistry.types,
+            MultiListPartRegistry.lists,
             {
                 'Test': [test, test],
                 'Test2': [test],
@@ -74,80 +74,80 @@ class MultiTypePartRegistryTestCase(TestCase):
 
     def test_load(self):
         lock_mock = MagicMock()
-        MultiTypePartRegistry.lock = lock_mock
+        MultiListPartRegistry.lock = lock_mock
 
         # no part_class defined
         self.assertRaisesMessage(
             ImproperlyConfigured,
             'Please specify a base class for the parts that are to be loaded',
-            MultiTypePartRegistry.load
+            MultiListPartRegistry.load
         )
 
-        MultiTypePartRegistry.part_class = object
+        MultiListPartRegistry.part_class = object
 
         # no subpath defined
         self.assertRaisesMessage(
             ImproperlyConfigured,
             'Please specify a python sub path for the function that is to be called',
-            MultiTypePartRegistry.load
+            MultiListPartRegistry.load
         )
 
-        MultiTypePartRegistry.call_function_subpath = 'subpath.load'
+        MultiListPartRegistry.call_function_subpath = 'subpath.load'
 
-        with patch('django_appregistration.MultiTypePartRegistry._checked_apps') as _checked_apps:
+        with patch('django_appregistration.MultiListPartRegistry._checked_apps') as _checked_apps:
 
             # should not find the module and therefore raise an import error
             _checked_apps.return_value=['non_existent']
-            MultiTypePartRegistry.load()
-            self.assertTrue(MultiTypePartRegistry.loaded)
-            self.assertDictEqual(MultiTypePartRegistry.types, {})
+            MultiListPartRegistry.load()
+            self.assertTrue(MultiListPartRegistry.loaded)
+            self.assertDictEqual(MultiListPartRegistry.lists, {})
             _checked_apps.assert_called_once_with()
             _checked_apps.reset_mock()
-            MultiTypePartRegistry.reset()
+            MultiListPartRegistry.reset()
 
             # should find the module but does not have the function
             _checked_apps.return_value=['django_appregistration.tests']
-            MultiTypePartRegistry.load()
-            self.assertTrue(MultiTypePartRegistry.loaded)
-            self.assertDictEqual(MultiTypePartRegistry.types, {})
+            MultiListPartRegistry.load()
+            self.assertTrue(MultiListPartRegistry.loaded)
+            self.assertDictEqual(MultiListPartRegistry.lists, {})
             _checked_apps.assert_called_once_with()
             _checked_apps.reset_mock()
-            MultiTypePartRegistry.reset()
+            MultiListPartRegistry.reset()
 
             with patch('django_appregistration.tests.subpath') as subpath:
                 # finds the module but load is not callable
                 subpath.load = object()
-                MultiTypePartRegistry.load()
-                self.assertTrue(MultiTypePartRegistry.loaded)
-                self.assertDictEqual(MultiTypePartRegistry.types, {})
+                MultiListPartRegistry.load()
+                self.assertTrue(MultiListPartRegistry.loaded)
+                self.assertDictEqual(MultiListPartRegistry.lists, {})
                 _checked_apps.assert_called_once_with()
                 _checked_apps.reset_mock()
-                MultiTypePartRegistry.reset()
+                MultiListPartRegistry.reset()
 
                 subpath.load = MagicMock()
-                MultiTypePartRegistry.load()
-                self.assertTrue(MultiTypePartRegistry.loaded)
-                self.assertDictEqual(MultiTypePartRegistry.types, {})
-                subpath.load.assert_called_once_with(MultiTypePartRegistry)
+                MultiListPartRegistry.load()
+                self.assertTrue(MultiListPartRegistry.loaded)
+                self.assertDictEqual(MultiListPartRegistry.lists, {})
+                subpath.load.assert_called_once_with(MultiListPartRegistry)
                 _checked_apps.assert_called_once_with()
                 _checked_apps.reset_mock()
-                MultiTypePartRegistry.reset()
+                MultiListPartRegistry.reset()
 
             # already loaded
-            MultiTypePartRegistry.loaded=True
-            MultiTypePartRegistry.load()
-            self.assertDictEqual(MultiTypePartRegistry.types, {})
+            MultiListPartRegistry.loaded=True
+            MultiListPartRegistry.load()
+            self.assertDictEqual(MultiListPartRegistry.lists, {})
             self.assertEqual(_checked_apps.call_count, 0)
             _checked_apps.reset_mock()
 
-    @patch('django_appregistration.MultiTypePartRegistry.load')
-    @patch('django_appregistration.MultiTypePartRegistry.sort_parts', return_value=[])
+    @patch('django_appregistration.MultiListPartRegistry.load')
+    @patch('django_appregistration.MultiListPartRegistry.sort_parts', return_value=[])
     def test_get(self, sort_parts, load):
-        MultiTypePartRegistry.types = {
+        MultiListPartRegistry.lists = {
             'exists': [1,2,3]
         }
         # type not in types
-        ret = MultiTypePartRegistry.get('not_existent')
+        ret = MultiListPartRegistry.get('not_existent')
         self.assertListEqual(ret, [])
         load.assert_called_once_with()
         sort_parts.assert_called_once_with([])
@@ -155,7 +155,7 @@ class MultiTypePartRegistryTestCase(TestCase):
         sort_parts.reset_mock()
 
         # type exists
-        ret = MultiTypePartRegistry.get('exists')
+        ret = MultiListPartRegistry.get('exists')
         self.assertListEqual(ret, [])
         load.assert_called_once_with()
         sort_parts.assert_called_once_with([1,2,3])
@@ -164,18 +164,18 @@ class MultiTypePartRegistryTestCase(TestCase):
 
     def test_sort_parts(self):
         l = [object()]
-        self.assertEqual(MultiTypePartRegistry.sort_parts(l), l)
+        self.assertEqual(MultiListPartRegistry.sort_parts(l), l)
 
 class SingleTypePartRegistryTestCase(TestCase):
-    @patch('django_appregistration.MultiTypePartRegistry.add_item')
-    def test_add_item(self, add_item):
+    @patch('django_appregistration.MultiListPartRegistry.add_part')
+    def test_add_part(self, add_part):
         id_obj = object()
-        SingleTypePartRegistry.add_item(id_obj)
-        add_item.assert_called_once_with('', id_obj)
+        SingleListPartRegistry.add_part(id_obj)
+        add_part.assert_called_once_with('', id_obj)
 
-    @patch('django_appregistration.MultiTypePartRegistry.get', return_value='return')
+    @patch('django_appregistration.MultiListPartRegistry.get', return_value='return')
     def test_get(self, get):
-        ret = SingleTypePartRegistry.get()
+        ret = SingleListPartRegistry.get()
         self.assertEqual(ret, 'return')
         get.assert_called_once_with('')
 

@@ -13,8 +13,8 @@ __email__ = "mail@northbridge-development.de"
 __status__ = "Development"
 
 
-class MultiTypePartRegistry(object):
-    types = {}
+class MultiListPartRegistry(object):
+    lists = {}
     loaded = False
     lock = threading.Lock()
     part_class = None
@@ -23,7 +23,7 @@ class MultiTypePartRegistry(object):
 
     @classmethod
     def reset(cls):
-        cls.types = {}
+        cls.lists = {}
         cls.loaded = False
 
     @classmethod
@@ -34,11 +34,11 @@ class MultiTypePartRegistry(object):
         return settings.INSTALLED_APPS
 
     @classmethod
-    def add_item(cls, type, part):
+    def add_part(cls, list, part):
         if isinstance(part, cls.part_class):
-            if not type in cls.types:
-                cls.types[type] = []
-            cls.types[type].append(part)
+            if not list in cls.lists:
+                cls.lists[list] = []
+            cls.lists[list].append(part)
         else:
             raise ValueError('Part %s is not of type %s' % (force_text(part), force_text(cls.part_class)))
 
@@ -61,9 +61,9 @@ class MultiTypePartRegistry(object):
             cls.loaded = True
 
     @classmethod
-    def get(cls, type):
+    def get(cls, list):
         cls.load()
-        parts = cls.types.get(type, [])
+        parts = cls.lists.get(list, [])
         return cls.sort_parts(parts)
 
     @classmethod
@@ -71,11 +71,11 @@ class MultiTypePartRegistry(object):
         return parts
 
 
-class SingleTypePartRegistry(MultiTypePartRegistry):
+class SingleListPartRegistry(MultiListPartRegistry):
     @classmethod
-    def add_item(cls, part):
-        return super(SingleTypePartRegistry, cls).add_item('', part)
+    def add_part(cls, part):
+        return super(SingleListPartRegistry, cls).add_part('', part)
 
     @classmethod
     def get(cls):
-        return super(SingleTypePartRegistry, cls).get('')
+        return super(SingleListPartRegistry, cls).get('')
