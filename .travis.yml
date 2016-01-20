@@ -36,6 +36,6 @@ install:
 # # command to run tests, e.g. python setup.py test
 script:
   - python setup.py develop
-  - coverage run --rcfile='django_pluggableappsettings/tests/coverage.conf' --source='./django_pluggableappsettings/' django_pluggableappsettings/tests/travis_ci.py
+  - coverage run --rcfile='django_appregistration/tests/coverage.conf' --source='./django_appregistration/' django_appregistration/tests/travis_ci.py
 after_success:
   - coveralls
