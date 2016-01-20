@@ -1,0 +1,41 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+env:
+  - DJANGO_VERSION=1.6.11
+  - DJANGO_VERSION=1.7.11
+  - DJANGO_VERSION=1.8.8
+  - DJANGO_VERSION=1.9.1
+
+matrix:
+  exclude:
+    - python: "3.3"
+      env: DJANGO_VERSION=1.6.11
+    - python: "3.3"
+      env: DJANGO_VERSION=1.9.1
+    - python: "3.4"
+      env: DJANGO_VERSION=1.6.11
+    - python: "3.5"
+      env: DJANGO_VERSION=1.6.11
+    - python: "3.5"
+      env: DJANGO_VERSION=1.7.11
+    - python: "3.5"
+      env: DJANGO_VERSION=1.8.8
+
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install:
+  - pip install .
+  - pip install django==$DJANGO_VERSION
+  - pip install coveralls six
+# # command to run tests, e.g. python setup.py test
+script:
+  - python setup.py develop
+  - coverage run --rcfile='django_pluggableappsettings/tests/coverage.conf' --source='./django_pluggableappsettings/' django_pluggableappsettings/tests/travis_ci.py
+after_success:
+  - coveralls
