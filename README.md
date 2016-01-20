@@ -112,8 +112,8 @@ The objects can be retrieved like so:
 The included tests can be run standalone by running the `tests/runtests.py` script. You need to have Django and
 mock installed for them to run. If you also want to run coverage, you need to install it before running the tests
 
-###Development
-- Rename `Type` to `List` in class names
+###v.0.0.1a
+- Rename `Type` to `List` in classes
 
 ###v.0.0.1
 
