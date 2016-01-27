@@ -4,6 +4,7 @@ from pydoc import locate
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.encoding import force_text
+from six import with_metaclass
 
 __author__ = 'Tim Schneider <tim.schneider@northbridge-development.de>'
 __copyright__ = "Copyright 2016, Northbridge Development Konrad & Schneider GbR"
@@ -12,9 +13,12 @@ __maintainer__ = "Tim Schneider"
 __email__ = "mail@northbridge-development.de"
 __status__ = "Development"
 
+class RegistryMetaClass(type):
+    def __init__(self, *args, **kwargs):
+        super(RegistryMetaClass, self).__init__(*args, **kwargs)
+        self.lists = {}
 
-class MultiListPartRegistry(object):
-    lists = {}
+class MultiListPartRegistry(with_metaclass(RegistryMetaClass, object)):
     loaded = False
     lock = threading.Lock()
     part_class = None

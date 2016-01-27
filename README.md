@@ -112,6 +112,10 @@ The objects can be retrieved like so:
 The included tests can be run standalone by running the `tests/runtests.py` script. You need to have Django and
 mock installed for them to run. If you also want to run coverage, you need to install it before running the tests
 
+###v.0.0.2
+- Bugfix: Using a metaclass to separate the lists for each subclass of `MultiListPartRegistry`. Before each registry
+used the same list resulting in element mixtures if more than one registry was used
+
 ###v.0.0.1a
 - Rename `Type` to `List` in classes
 

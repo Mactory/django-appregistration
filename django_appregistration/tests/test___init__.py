@@ -180,4 +180,21 @@ class SingleTypePartRegistryTestCase(TestCase):
         get.assert_called_once_with('')
 
 
+class MultipleReistriesDividedSettingsTestCase(TestCase):
+    def test_multiple_registries(self):
+        class Registry1(SingleListPartRegistry):
+            part_class = object
+            call_function_subpath = 'non_existent_subpath'
 
+        class Registry2(SingleListPartRegistry):
+            part_class = object
+            call_function_subpath = 'non_existent_subpath'
+
+        id_obj1 = object()
+        id_obj2 = object()
+
+        Registry1.add_part(id_obj1)
+        Registry2.add_part(id_obj2)
+
+        self.assertEqual(len(Registry1.get()), 1)
+        self.assertEqual(len(Registry2.get()), 1)
