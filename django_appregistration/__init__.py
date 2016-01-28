@@ -17,10 +17,10 @@ class RegistryMetaClass(type):
     def __init__(self, *args, **kwargs):
         super(RegistryMetaClass, self).__init__(*args, **kwargs)
         self.lists = {}
+        self.lock = threading.Lock()
+        self.loaded = False
 
 class MultiListPartRegistry(with_metaclass(RegistryMetaClass, object)):
-    loaded = False
-    lock = threading.Lock()
     part_class = None
     ignore_django_namespace = True
     call_function_subpath = None
