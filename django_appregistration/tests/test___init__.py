@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from django.test import TestCase
 from mock import patch, MagicMock
-from django_appregistration import MultiListPartRegistry, SingleListPartRegistry
+from django_appregistration import MultiListPartRegistry, SingleListPartRegistry, filter_available_apps
 
 try:
     from django.test import override_settings
@@ -198,3 +198,21 @@ class MultipleReistriesDividedSettingsTestCase(TestCase):
 
         self.assertEqual(len(Registry1.get()), 1)
         self.assertEqual(len(Registry2.get()), 1)
+
+
+class FilterAvailableAppsTestCase(TestCase):
+    def test_filter_available_apps_list(self):
+        test_apps = (
+            'django',
+            'non_existent',
+            'django_appregistration',
+        )
+        desired_result = [
+            'django',
+            'django_appregistration',
+        ]
+
+        self.assertListEqual(
+            desired_result,
+            filter_available_apps(*test_apps)
+        )

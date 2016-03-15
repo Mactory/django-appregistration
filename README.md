@@ -43,36 +43,24 @@ To register elements with the Registry you therefore need to implement the appro
 `call_function_subpath` in an app that is listed in the `INSTALLED_APPS`. The implemented function then needs to call
 the `add_item` function on the passed registry.
 
-### MultiListPartRegistry(object)
-The following functions are available:
+To further simplify the usage of dynamic apps, the app provides a `filter_available_apps` function that filters a list
+of possible apps and returns only the ones that are available in the current installation. This allows for a highly
+dynamic configuration of django projects by allowing certain apps to be installed selectively. Use it in your
+`settings.py` to dynamically add the available apps to your `INSTALLED_APPS`
 
-#### add_part(list, part)
-Adds the part given by the `part` parameter to the list with the name given by the `list` parameter.
-
-#### get(list)
-Returns the parts in the list with the name given by the `list` parameter. The elements are sorted before they are
-returned.
-
-#### sort_parts(parts)
-Can be overwritten to define a custom ordering of the parts. The default function simply returns the list unordered.
-
-#### load()
-When called, the class is initialized and loads the available parts into its list cache. Does nothing if the `load()`
-was already called. Is called automatically by the `get()` function. There is no need to call it explicitly unless you
-want to initialize the class before the first list is retrieved.
-
-#### reset()
-Resets the Registry to its initial state so that the parts will be reloaded the next time the `load()` function is
-called. Usually there is no need to call this as it only adds extra overhead when the parts need to be loaded again.
-
-### SingleListPartRegistry(MultiListPartRegistry)
-The following functions are additionally available:
-
-#### add_part(part)
-Adds the part given by the `part` parameter to the list.
-
-#### get()
-Returns the parts in the list. The elements are sorted before they are returned.
+#### File: settings.py
+    from django_appregistration import filter_available_apps
+    INSTALLED_APPS = [
+        'imported_app1',
+        'imported_app2',
+        'imported_app3',
+        ...
+    ] + filter_available_apps(
+        'optional_app1',
+        'optional_app2',
+        'optional_app3',
+        ...
+    )
 
 ## Example
 Here is an implementation example with a Registry implemented in the `extendable_app` app and an app `extending_app` 
@@ -107,10 +95,48 @@ The objects can be retrieved like so:
     other_parts = MyRegistry.get('other') # retrieves the `other` list
    
 
+
+##API
+
+### MultiListPartRegistry(object)
+The following functions are available:
+
+#### add_part(list, part)
+Adds the part given by the `part` parameter to the list with the name given by the `list` parameter.
+
+#### get(list)
+Returns the parts in the list with the name given by the `list` parameter. The elements are sorted before they are
+returned.
+
+#### sort_parts(parts)
+Can be overwritten to define a custom ordering of the parts. The default function simply returns the list unordered.
+
+#### load()
+When called, the class is initialized and loads the available parts into its list cache. Does nothing if the `load()`
+was already called. Is called automatically by the `get()` function. There is no need to call it explicitly unless you
+want to initialize the class before the first list is retrieved.
+
+#### reset()
+Resets the Registry to its initial state so that the parts will be reloaded the next time the `load()` function is
+called. Usually there is no need to call this as it only adds extra overhead when the parts need to be loaded again.
+
+### SingleListPartRegistry(MultiListPartRegistry)
+The following functions are additionally available:
+
+#### add_part(part)
+Adds the part given by the `part` parameter to the list.
+
+#### get()
+Returns the parts in the list. The elements are sorted before they are returned.
+
+
 ##Running the tests
 
 The included tests can be run standalone by running the `tests/runtests.py` script. You need to have Django and
 mock installed for them to run. If you also want to run coverage, you need to install it before running the tests
+
+###v.0.0.4
+- Adding the `filter_available_apps` function that checks a list of given apps for their availability.
 
 ###v.0.0.3
 - Bugfix: Also moved the `lock` and the `loaded` attributes into the meta class 
@@ -128,4 +154,4 @@ used the same list resulting in element mixtures if more than one registry was u
 
 
 ## Maintainers
-This Project is maintaned by [Northbridge Development Konrad & Schneider GbR](http://www.northbridge-development.de) Softwareentwicklung
+This Project is maintained by [Northbridge Development Konrad & Schneider GbR](http://www.northbridge-development.de) Softwareentwicklung.

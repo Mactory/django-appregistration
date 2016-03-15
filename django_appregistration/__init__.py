@@ -4,6 +4,7 @@ from pydoc import locate
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.encoding import force_text
+import imp
 from six import with_metaclass
 
 __author__ = 'Tim Schneider <tim.schneider@northbridge-development.de>'
@@ -83,3 +84,20 @@ class SingleListPartRegistry(MultiListPartRegistry):
     @classmethod
     def get(cls):
         return super(SingleListPartRegistry, cls).get('')
+
+
+def filter_available_apps(*app_list):
+    '''
+    Checks for the availability of the given apps and returns a list with only the available apps
+    :param app_list: The list of the candidate apps to check for
+    :return: The list of apps from the candidate list that are actually available
+    '''
+
+    available_apps = []
+    for app in app_list:
+        try:
+            imp.find_module(app)
+            available_apps.append(app)
+        except ImportError:
+            pass
+    return available_apps
