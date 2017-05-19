@@ -2,7 +2,7 @@
 import logging
 
 __author__ = 'Tim Schneider <tim.schneider@northbridge-development.de>'
-__copyright__ = "Copyright 2016, Northbridge Development Konrad & Schneider GbR"
+__copyright__ = "Copyright 2016 - 2017, Northbridge Development Konrad & Schneider GbR"
 __credits__ = ["Tim Schneider", ]
 __maintainer__ = "Tim Schneider"
 __email__ = "mail@northbridge-development.de"
@@ -23,7 +23,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-appregistration',
-    version='0.0.4',
+    version='0.0.5',
     packages=find_packages(exclude=['*.tests',]),
     include_package_data=True,
     install_requires=['Django >=1.6',],
@@ -39,6 +39,9 @@ setup(
         'Framework :: Django :: 1.6',
         'Framework :: Django :: 1.7',
         'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
+        'Framework :: Django :: 1.10',
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License', # example license
         'Operating System :: OS Independent',
@@ -49,6 +52,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
