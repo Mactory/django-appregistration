@@ -1,20 +1,20 @@
-[![PyPI version](https://img.shields.io/pypi/v/django-appregistration.svg)](http://badge.fury.io/py/django-appregistration) [![Build Status](https://travis-ci.org/NB-Dev/django-appregistration.svg?branch=master)](https://travis-ci.org/NB-Dev/django-appregistration) [![Coverage Status](https://coveralls.io/repos/NB-Dev/django-appregistration/badge.svg?branch=master&service=github)](https://coveralls.io/github/NB-Dev/django-appregistration?branch=master) [![Downloads](https://img.shields.io/pypi/dm/django-appregistration.svg)](https://pypi.python.org/pypi/django-appregistration/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/django-appregistration.svg)](https://pypi.python.org/pypi/django-appregistration/) [![License](https://img.shields.io/pypi/l/django-appregistration.svg)](https://pypi.python.org/pypi/django-appregistration/) [![Codacy Badge](https://api.codacy.com/project/badge/grade/e9e55c2658d54801b6b29a1f52173dcf)](https://www.codacy.com/app/tim_11/django-appregistation)
+[![PyPI version](https://img.shields.io/pypi/v/django-appregistration.svg)](http://badge.fury.io/py/django-appregistration) [![Build Status](https://travis-ci.org/NB-Dev/django-appregistration.svg?branch=master)](https://travis-ci.org/NB-Dev/django-appregistration) [![Coverage Status](https://coveralls.io/repos/NB-Dev/django-appregistration/badge.svg?branch=master&service=github)](https://coveralls.io/github/NB-Dev/django-appregistration?branch=master) [![Downloads](https://img.shields.io/pypi/dm/django-appregistration.svg)](https://pypi.python.org/pypi/django-appregistration/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/django-appregistration.svg)](https://pypi.python.org/pypi/django-appregistration/) [![Supported Django versions](https://img.shields.io/badge/Django-1.6%2C%201.7%2C%201.8%2C%201.9%2C%201.10%2C%201.11-brightgreen.svg)](https://pypi.python.org/pypi/django-pluggableappsettings/) [![License](https://img.shields.io/pypi/l/django-appregistration.svg)](https://pypi.python.org/pypi/django-appregistration/) [![Codacy Badge](https://api.codacy.com/project/badge/grade/e9e55c2658d54801b6b29a1f52173dcf)](https://www.codacy.com/app/tim_11/django-appregistation)
 
-#django-appregistration
+# django-appregistration
 
 
 This app provides a base class to easily realize django apps that allow other apps to register parts in it.
 
-##Requirements:
+## Requirements:
 
 * Django >= 1.6
 
-##Installation
+## Installation
 
 * From the pip repository: `pip install django-appregistration`
 * or directly from github: `pip install git+git://github.com/NB-Dev/django-apregistration.git`
 
-##Usage
+## Usage
 
 django-appregistration provides two base classes for the registration of modules from other apps:
 `MultiListPartRegistry` and `SingleListPartRegistry`. While both have the same basic functionality, in the
@@ -48,7 +48,7 @@ of possible apps and returns only the ones that are available in the current ins
 dynamic configuration of django projects by allowing certain apps to be installed selectively. Use it in your
 `settings.py` to dynamically add the available apps to your `INSTALLED_APPS`
 
-#### File: settings.py
+### File: settings.py
     from django_appregistration import filter_available_apps
     INSTALLED_APPS = [
         'imported_app1',
@@ -66,7 +66,7 @@ dynamic configuration of django projects by allowing certain apps to be installe
 Here is an implementation example with a Registry implemented in the `extendable_app` app and an app `extending_app` 
 that extends the Registry
 
-#### File: extendable_app.registry.py
+### File: extendable_app.registry.py
     from django_appregistration import MultiListPartRegistry
     
     class MyRegisterable(object):
@@ -76,7 +76,7 @@ that extends the Registry
        part_class = MyRegisterable
        call_function_subpath = 'registerable.register'
 
-#### File: extending_app.registerable.py
+### File: extending_app.registerable.py
     def register(registry):
        # import inside the function so that the import is only needed if the registry is used
        # and the package is therefore available
@@ -96,7 +96,9 @@ The objects can be retrieved like so:
    
 
 
-##API
+## API
+
+API documetation
 
 ### MultiListPartRegistry(object)
 The following functions are available:
@@ -130,25 +132,25 @@ Adds the part given by the `part` parameter to the list.
 Returns the parts in the list. The elements are sorted before they are returned.
 
 
-##Running the tests
+## Running the tests
 
 The included tests can be run standalone by running the `tests/runtests.py` script. You need to have Django and
 mock installed for them to run. If you also want to run coverage, you need to install it before running the tests
 
-###v.0.0.4
+### v.0.0.4
 - Adding the `filter_available_apps` function that checks a list of given apps for their availability.
 
-###v.0.0.3
+### v.0.0.3
 - Bugfix: Also moved the `lock` and the `loaded` attributes into the meta class 
 
-###v.0.0.2
+### v.0.0.2
 - Bugfix: Using a metaclass to separate the lists for each subclass of `MultiListPartRegistry`. Before each registry
 used the same list resulting in element mixtures if more than one registry was used
 
-###v.0.0.1a
+### v.0.0.1a
 - Rename `Type` to `List` in classes
 
-###v.0.0.1
+### v.0.0.1
 
 - Initial implementation of `MultiTypePartRegistry` and `SingleTypePartRegistry`
 
