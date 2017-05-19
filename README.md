@@ -137,6 +137,14 @@ Returns the parts in the list. The elements are sorted before they are returned.
 The included tests can be run standalone by running the `tests/runtests.py` script. You need to have Django and
 mock installed for them to run. If you also want to run coverage, you need to install it before running the tests
 
+## Changelog
+
+### v0.0.6 (2017-05-19)
+- Fixing README heading levels
+
+### v0.0.5 (2017-05-19)
+- Adding support for Django 1.10 and 1.11
+
 ### v.0.0.4
 - Adding the `filter_available_apps` function that checks a list of given apps for their availability.
 
