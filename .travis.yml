@@ -10,25 +10,25 @@ before_install:
 services:
   - xvfb
 env:
-  - DJANGO_VERSION=2.0
-  - DJANGO_VERSION=2.1
-  - DJANGO_VERSION=2.2
-  - DJANGO_VERSION=3.0
+  - DJANGO_VERSION=2.0.999
+  - DJANGO_VERSION=2.1.999
+  - DJANGO_VERSION=2.2.999
+  - DJANGO_VERSION=3.0.999
 
 matrix:
   exclude:
     - python: "3.4"
-      env: DJANGO_VERSION=2.1.15
+      env: DJANGO_VERSION=2.1.999
     - python: "3.4"
-      env: DJANGO_VERSION=2.2.10
+      env: DJANGO_VERSION=2.2.999
     - python: "3.4"
-      env: DJANGO_VERSION=3.0.3
+      env: DJANGO_VERSION=3.0.999
     - python: "3.5"
-      env: DJANGO_VERSION=3.0.3
+      env: DJANGO_VERSION=3.0.999
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install django==$DJANGO_VERSION
+  - pip install django<=$DJANGO_VERSION
   - pip install coveralls six
 # # command to run tests, e.g. python setup.py test
 script:
